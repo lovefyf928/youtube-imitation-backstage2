@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"../controllers"
+	"youtube-imitation-backstage2/controllers"
 	"github.com/astaxie/beego"
 )
 
@@ -9,4 +9,5 @@ import (
 
 func init() {
 	beego.Router("/", &controllers.MainController{})
+	beego.Router("/register", &controllers.UserController{}, "post:Register")
 }
