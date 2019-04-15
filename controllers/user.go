@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"github.com/astaxie/beego"
 	"youtube-imitation-backstage2/common/dto"
 	"youtube-imitation-backstage2/models"
-	"github.com/astaxie/beego"
 )
 
 type UserController struct {

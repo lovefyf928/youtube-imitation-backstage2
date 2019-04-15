@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/astaxie/beego"
 	//_ "./filters"
 	_ "youtube-imitation-backstage2/routers"
-	"github.com/astaxie/beego"
 )
 
 func main() {

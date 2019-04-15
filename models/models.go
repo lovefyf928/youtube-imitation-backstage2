@@ -1,10 +1,10 @@
 package models
 
 import (
-	"youtube-imitation-backstage2/common/dto"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
+	"youtube-imitation-backstage2/common/dto"
 )
 
 func init()  {
