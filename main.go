@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	//todoxcs router 放入单独文件 使用 import
+	//todo router 放入单独文件 使用 import
 	beego.Router("/", &controllers.MainController{})
 
 	beego.Router("/register", &controllers.UserController{}, "post:Register")
