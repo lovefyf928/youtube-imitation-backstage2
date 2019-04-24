@@ -1,8 +1,8 @@
 package routers
 
 import (
-	"../controllers"
-	_ "../filters"
+	"youtube-imitation-backstage2/controllers"
+	_ "youtube-imitation-backstage2/filters"
 	"github.com/astaxie/beego"
 )
 

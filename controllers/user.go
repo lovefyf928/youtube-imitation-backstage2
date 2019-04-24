@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"../common/authorization"
-	"../common/dto"
-	"../models"
+	"youtube-imitation-backstage2/common/authorization"
+	"youtube-imitation-backstage2/common/dto"
+	"youtube-imitation-backstage2/models"
 	"github.com/astaxie/beego"
 	"strconv"
 )
@@ -19,9 +19,9 @@ func (c *UserController) Register() {
 	email := c.GetString("email")
 	phoneNumber := c.GetString("phoneNumber")
 	password := c.GetString("password")
-	sex, _ := c.GetInt("sex")
+	beego.Info(password)
 	if userName != "" && email != "" && phoneNumber != "" && password != "" {
-		c.Data["json"] = models.SqlIDU("INSERT INTO `User`(`uid`, `userName`, `email`, `phoneNumber`, `password`, `sex`) VALUES (?, ?, ?, ?, ?, ?)", "Register user success", nil, nil, userName, email, phoneNumber, password, sex)
+		c.Data["json"] = models.SqlI("INSERT INTO `User`(`uid`, `userName`, `email`, `phoneNumber`, `password`) VALUES (?, ?, ?, ?, ?)", "Register user success", nil, nil, userName, email, phoneNumber, password)
 		c.ServeJSON()
 		return
 	}
