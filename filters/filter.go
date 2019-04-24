@@ -1,12 +1,12 @@
 package filters
 
 import (
+	"../common/authorization"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/plugins/cors"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
-	"youtube-imitation-backstage2/common/authorization"
-	"github.com/astaxie/beego/context"
 )
 
 func init()  {

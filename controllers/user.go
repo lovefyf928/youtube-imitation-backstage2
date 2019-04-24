@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"youtube-imitation-backstage2/common/authorization"
-	"youtube-imitation-backstage2/common/dto"
-	"youtube-imitation-backstage2/models"
+	"../common/authorization"
+	"../common/dto"
+	"../models"
 	"github.com/astaxie/beego"
 	"strconv"
 )
