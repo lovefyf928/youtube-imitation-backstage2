@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	_ "../common/service"
 	"../common/authorization"
 	"../common/dto"
 	"../models"
 	"github.com/astaxie/beego"
 	"github.com/dgrijalva/jwt-go"
 	"strconv"
+	"../common/service"
 )
 
 type UserController struct {
@@ -61,21 +63,12 @@ func (c *UserController) ChangePassword() {
 	oldPassword := c.GetString("oldPassword")
 	newPassword := c.GetString("newPassword")
 	if oldPassword != "" && newPassword != "" {
-		var token = c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
+		var token= c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
 		userClaims, _ := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
 		uid := userClaims.(jwt.MapClaims)["uid"]
-		maps, ok := models.SqlS("select password from user where uid=?", uid)
-		if ok {
-			if oldPassword == maps[0]["password"] {
-				c.Data["json"] = models.SqlIDU("UPDATE `user` SET `password`=? WHERE uid=?", "update password successful", nil, newPassword, uid)
-			} else {
-				c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("your old password error")
-			}
-		}
-	} else {
-		c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("plz enter your old password and new password")
+		c.Data["json"] = service.ChangePWD(uid, oldPassword, newPassword)
+		c.ServeJSON()
 	}
-	c.ServeJSON()
 }
 
 func (c *UserController) Logout() {
