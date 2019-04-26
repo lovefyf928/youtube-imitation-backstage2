@@ -5,6 +5,7 @@ import (
 	"../common/dto"
 	"../models"
 	"github.com/astaxie/beego"
+	"github.com/dgrijalva/jwt-go"
 	"strconv"
 )
 
@@ -40,7 +41,7 @@ func (c *UserController) Login() {
 	if userName != "" && password != "" {
 		maps, ok := models.SqlS("select uid from user where userName = ? and password = ?", userName, password)
 		if ok {
-			key := []byte(userName)
+			key := []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME))
 			uid, _ := strconv.Atoi(maps[0]["uid"].(string))
 			token, err := authorization.BuildUserToken(key, userName, uint(uid))
 			if err == nil {
@@ -57,26 +58,19 @@ func (c *UserController) Login() {
 }
 
 func (c *UserController) ChangePassword() {
-	userName := c.GetString("userName")
-	email := c.GetString("email")
 	oldPassword := c.GetString("oldPassword")
 	newPassword := c.GetString("newPassword")
-	phoneNumber := c.GetString("phoneNumber")
 	if oldPassword != "" && newPassword != "" {
-		if userName != "" || email != "" || phoneNumber != "" {
-			maps, ok := models.SqlS("select password from user where userName=? or phoneNumber=? or email=?", userName, phoneNumber, email)
-			if ok {
-				if oldPassword == maps[0]["password"] {
-					//c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("hello")
-					c.Data["json"] = models.SqlIDU("UPDATE `user` SET `password`=? WHERE userName=? or phoneNumber=? or email=?", "update password successful", nil, newPassword, userName, phoneNumber, email)
-				} else {
-					c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("your old password error")
-				}
+		var token = c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
+		userClaims, _ := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
+		uid := userClaims.(jwt.MapClaims)["uid"]
+		maps, ok := models.SqlS("select password from user where uid=?", uid)
+		if ok {
+			if oldPassword == maps[0]["password"] {
+				c.Data["json"] = models.SqlIDU("UPDATE `user` SET `password`=? WHERE uid=?", "update password successful", nil, newPassword, uid)
 			} else {
-				c.Data["json"] = dto.NewSuccessResponseDto(map[string]interface{}{"msg": "your username or phonenumber or email error", "code": false})
+				c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("your old password error")
 			}
-		} else {
-			c.Data["json"] = dto.NewSuccessResponseDto(map[string]interface{}{"msg": "plz enter your username or phonenumber or email", "code": false})
 		}
 	} else {
 		c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("plz enter your old password and new password")

@@ -21,7 +21,7 @@ func init()  {
 
 	beego.InsertFilter("/*", beego.BeforeRouter, func(ctx *context.Context) {
 
-		if ctx.Request.RequestURI != "/register" && ctx.Request.RequestURI != "/login" && ctx.Request.RequestURI != "/selectusername" {
+		//if ctx.Request.RequestURI != "/register" && ctx.Request.RequestURI != "/login" && ctx.Request.RequestURI != "/selectusername" {
 
 			var token= ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
 
@@ -32,7 +32,7 @@ func init()  {
 
 			userClaims, err := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
 
-			if err == nil {
+			if err != nil {
 				ctx.Redirect(http.StatusUnauthorized, "/")
 				return
 			}
@@ -43,7 +43,7 @@ func init()  {
 				ctx.Redirect(http.StatusUnauthorized, "/")
 				return
 			}
-		}
+		//}
 	})
 
 }
