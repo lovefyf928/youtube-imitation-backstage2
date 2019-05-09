@@ -1,20 +1,18 @@
 package controllers
 
 import (
-	_ "../common/service"
+	"../common/service"
 	"../common/authorization"
 	"../common/dto"
 	"../models"
 	"github.com/astaxie/beego"
 	"github.com/dgrijalva/jwt-go"
 	"strconv"
-	"../common/service"
 )
 
 type UserController struct {
 	beego.Controller
 }
-
 
 
 func (c *UserController) Register() {
@@ -59,14 +57,24 @@ func (c *UserController) Login() {
 	}
 }
 
-func (c *UserController) ChangePassword() {
-	oldPassword := c.GetString("oldPassword")
+func (c *UserController) ChangeInformation() {
+	var sex interface{}
+	sex, _ = c.GetInt("sex")
+	year := c.GetString("year")
+	month := c.GetString("month")
+	day := c.GetString("day")
+	userName := c.GetString("userName")
 	newPassword := c.GetString("newPassword")
-	if oldPassword != "" && newPassword != "" {
+	if  sex != nil && year != "" && month != "" && day != "" && userName != "" {
 		var token= c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
 		userClaims, _ := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
 		uid := userClaims.(jwt.MapClaims)["uid"]
-		c.Data["json"] = service.ChangePWD(uid, oldPassword, newPassword)
+		res := service.ChangeI(uid, newPassword, sex, year, month, day, userName)
+		if res {
+			c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("update successful")
+		} else {
+			c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("error")
+		}
 		c.ServeJSON()
 	}
 }
@@ -100,6 +108,36 @@ func (c *UserController) SelectUserName() {
 		c.Data["json"] = dto.NewSuccessResponseDto(map[string]interface{}{"userName": username, "email": email})
 	} else {
 		c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("your phone number or email error")
+	}
+	c.ServeJSON()
+}
+
+func (c *UserController) TokenSelectUsernameAndEmail(){
+	var token= c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
+	userClaims, _ := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
+	uid := userClaims.(jwt.MapClaims)["uid"]
+	maps, ok := service.SelectUserInformation(uid)
+	if ok {
+		userName := maps[0]["userName"]
+		email := maps[0]["email"]
+		c.Data["json"] = dto.NewSuccessResponseDto(map[string]interface{}{"userName": userName, "email": email})
+	} else {
+		c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("your token error")
+	}
+	c.ServeJSON()
+}
+
+
+func (c *UserController) GetInformation(){
+	var token= c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
+	userClaims, _ := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
+	uid := userClaims.(jwt.MapClaims)["uid"]
+	maps, ok := service.SelectUserInformation(uid)
+	if ok {
+		c.Data["json"] = dto.NewSuccessResponseDto(dto.Ud(maps[0]["uid"], maps[0]["userName"], maps[0]["email"], maps[0]["phoneNumber"], nil, maps[0]["sex"], maps[0]["birthday"], maps[0]["code"]))
+
+	} else {
+		c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("error")
 	}
 	c.ServeJSON()
 }

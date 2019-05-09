@@ -1,19 +1,31 @@
 package service
 
 import (
-	"../../common/dto"
+	"github.com/astaxie/beego/orm"
 	"../../models"
 )
 
-func ChangePWD (uid interface{}, oldPassword string, newPassword string) *dto.ResponseDto {
-	maps, ok := models.SqlS("select password from user where uid=?", uid)
-	if ok {
-		if oldPassword == maps[0]["password"] {
-			return models.SqlIDU("UPDATE `user` SET `password`=? WHERE uid=?", "update password successful", nil, newPassword, uid)
-		} else {
-			return dto.NewSuccessResponseDtoNilMsg("your old password error")
+
+func ChangeI (uid interface{}, newPassword interface{}, sex interface{}, year string, month string, day string, userName string) bool {
+	if newPassword == "" {
+		maps, ok := models.SqlS("select password from user where uid=?", uid)
+		if ok {
+			newPassword = maps[0]["password"]
 		}
+	}
+	date := year + "-" + month + "-" + day
+	res := models.SqlIDU("UPDATE `user` SET `userName`=?,`password`=?,`sex`=?,`birthday`=? WHERE uid=?", "update successful", nil, userName, newPassword, sex, date, uid)
+	if res.Success {
+		return true
+	}
+	return false
+}
+
+func SelectUserInformation(uid interface{}) ([]orm.Params, bool)  {
+	maps, ok := models.SqlS("select * from user where uid=?", uid)
+	if ok {
+		return maps, true
 	} else {
-		return dto.NewSuccessResponseDtoNilMsg("plz enter your old password and new password")
+		return nil, false
 	}
 }

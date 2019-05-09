@@ -7,6 +7,17 @@ type ResponseDto struct {
 	Data       interface{}
 }
 
+type UserData struct {
+	Uid interface{}
+	UserName interface{}
+	Email interface{}
+	PhoneNumber interface{}
+	Password interface{}
+	Sex interface{}
+	Birthday interface{}
+	Code interface{}
+}
+
 func NewResponseDto(success bool, statusCode DtoStatusCode, msg string, data interface{}) *ResponseDto {
 	return &ResponseDto{Success: success, StatusCode: statusCode, Msg: msg, Data: data}
 }
@@ -17,6 +28,10 @@ func NewSuccessResponseDto(data interface{}) *ResponseDto {
 
 func NewSuccessResponseDtoNilMsg(msg string) *ResponseDto {
 	return &ResponseDto{Success: true, StatusCode: SUCCESS, Msg: msg, Data: nil}
+}
+
+func Ud(uid interface{}, userName interface{}, email interface{}, phoneNumber interface{}, password interface{}, sex interface{}, birthday interface{}, code interface{}) *UserData {
+	return &UserData{Uid: uid, UserName: userName, Email: email, PhoneNumber: phoneNumber, Password: password, Sex: sex, Birthday: birthday, Code: code}
 }
 
 type DtoStatusCode int
