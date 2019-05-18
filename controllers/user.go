@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"../common/service"
 	"../common/authorization"
 	"../common/dto"
+	"../common/service"
 	"../models"
 	"github.com/astaxie/beego"
 	"github.com/dgrijalva/jwt-go"
@@ -14,7 +14,7 @@ type UserController struct {
 	beego.Controller
 }
 
-
+//todo 查询beego的文档，是否是这样获取参数，能否通过 自动组装 dto的方式，参看 controllers 文件夹下 description.md 中的伪代码
 func (c *UserController) Register() {
 	userName := c.GetString("userName")
 	email := c.GetString("email")
@@ -65,8 +65,9 @@ func (c *UserController) ChangeInformation() {
 	day := c.GetString("day")
 	userName := c.GetString("userName")
 	newPassword := c.GetString("newPassword")
-	if  sex != nil && year != "" && month != "" && day != "" && userName != "" {
-		var token= c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
+	if sex != nil && year != "" && month != "" && day != "" && userName != "" {
+		var token = c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
+		//todo authorization中封装一个方法，提供key 获取value，例如  uid:=authorization.getTokenValueByKey("uid");
 		userClaims, _ := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
 		uid := userClaims.(jwt.MapClaims)["uid"]
 		res := service.ChangeI(uid, newPassword, sex, year, month, day, userName)
@@ -87,7 +88,7 @@ func (c *UserController) Logout() {
 		c.ServeJSON()
 		return
 	}
-	if userName != ""  {
+	if userName != "" {
 		c.DelSession(userName)
 		c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("Logout success")
 	} else {
@@ -112,8 +113,8 @@ func (c *UserController) SelectUserName() {
 	c.ServeJSON()
 }
 
-func (c *UserController) TokenSelectUsernameAndEmail(){
-	var token= c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
+func (c *UserController) TokenSelectUsernameAndEmail() {
+	var token = c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
 	userClaims, _ := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
 	uid := userClaims.(jwt.MapClaims)["uid"]
 	maps, ok := service.SelectUserInformation(uid)
@@ -127,9 +128,8 @@ func (c *UserController) TokenSelectUsernameAndEmail(){
 	c.ServeJSON()
 }
 
-
-func (c *UserController) GetInformation(){
-	var token= c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
+func (c *UserController) GetInformation() {
+	var token = c.Ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
 	userClaims, _ := authorization.ParseUserToken(token[0], []byte(beego.AppConfig.String(authorization.TOKEN_CONFIG_NAME)))
 	uid := userClaims.(jwt.MapClaims)["uid"]
 	maps, ok := service.SelectUserInformation(uid)
