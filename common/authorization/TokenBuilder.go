@@ -1,6 +1,7 @@
 package authorization
 
 import (
+	"github.com/astaxie/beego"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
@@ -35,4 +36,10 @@ func ParseUserToken(tokenSrt string, SecretKey []byte) (claims jwt.Claims, err e
 	claims = token.Claims
 
 	return
+}
+
+func GetTokenValueByKey(token string,key string) interface{} {
+	userClaims, _ := ParseUserToken(token, []byte(beego.AppConfig.String(TOKEN_CONFIG_NAME)))
+	res := userClaims.(jwt.MapClaims)[key]
+	return res
 }

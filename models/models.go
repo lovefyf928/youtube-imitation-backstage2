@@ -1,7 +1,6 @@
 package models
 
 import (
-	"../common/dto"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
@@ -19,33 +18,33 @@ func init()  {
 	orm.RegisterDataBase(dbname, dbdname, ds)
 }
 
-func SqlIDU(sql string, msg string, data interface{}, args ...interface{}) *dto.ResponseDto {
+func SqlIDU(sql string, msg string, data interface{}, args ...interface{}) bool {
 	o := orm.NewOrm()
 	res, err := o.Raw(sql, args).Exec()
 	if err == nil {
 		num, _ := res.RowsAffected()
 		if num > 0 {
-			return dto.NewResponseDto(true, dto.SUCCESS, msg, data)
+			return true
 		} else {
-			return dto.NewResponseDto(false, dto.FORBBDIEN, "plz check your parameter", nil)
+			return false
 		}
 	}
-	return dto.NewResponseDto(false, dto.FORBBDIEN, "plz check your parameter", nil)
+	return false
 }
 
 
-func SqlI(sql string, msg string, data interface{}, args ...interface{}) *dto.ResponseDto {
+func SqlI(sql string, args ...interface{}) bool {
 	o := orm.NewOrm()
 	res, err := o.Raw(sql, nil,args).Exec()
 	if err == nil {
 		num, _ := res.RowsAffected()
 		if num > 0 {
-			return dto.NewResponseDto(true, dto.SUCCESS, msg, data)
+			return true
 		} else {
-			return dto.NewResponseDto(false, dto.FORBBDIEN, "plz check your parameter", nil)
+			return false
 		}
 	}
-	return dto.NewResponseDto(false, dto.FORBBDIEN, "plz check your parameter", nil)
+	return false
 }
 
 
