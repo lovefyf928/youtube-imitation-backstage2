@@ -2,14 +2,21 @@ package repository
 
 import (
 	"github.com/astaxie/beego/orm"
-	"../models"
+	"time"
+	"youtube-imitation-backstage2/models"
 )
 
+
 func RegisterRepository(userName string, email string, phoneNumber string, password string) bool {
-	if models.SqlI("INSERT INTO `User`(`uid`, `userName`, `email`, `phoneNumber`, `password`) VALUES (?, ?, ?, ?, md5(?))", nil, userName, email, phoneNumber, password) {
-		return true
-	} else {
+	_, ok := models.SqlS("select email from user where email=?", email)
+	if ok {
 		return false
+	} else {
+		if models.SqlI("INSERT INTO `User`(`uid`, `userName`, `email`, `phoneNumber`, `password`) VALUES (?, ?, ?, ?, md5(?))", nil, userName, email, phoneNumber, password) {
+			return true
+		} else {
+			return false
+		}
 	}
 }
 
@@ -49,5 +56,22 @@ func SelectUserInformationRepository(uid interface{}) ([]orm.Params, bool) {
 		return maps, true
 	} else {
 		return nil, false
+	}
+}
+
+func CreatChannelRepository(userName string, email string) bool {
+	maps, ok := models.SqlS("select uid from user where email=?", email)
+	if ok {
+		uid := maps[0]["uid"]
+		d := time.Now()
+		arr := []interface{}{nil, uid, userName, 0, nil, nil, d, nil, nil, nil}
+		ok := models.SqlI1("INSERT INTO `Channel`(`id`, `uid`, `name`, `subscriber`, `classification`, `introduction`, `registrationTime`, `channelDescription`, `position`, `link`) VALUES (?,?,?,?,?,?,?,?,?,?)", arr)
+		if ok {
+			return true
+		} else {
+			return false
+		}
+	} else {
+		return false
 	}
 }

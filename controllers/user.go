@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"regexp"
-	"../common/authorization"
-	"../common/dto"
-	"../service"
+	"youtube-imitation-backstage2/common/authorization"
+	"youtube-imitation-backstage2/common/dto"
+	"youtube-imitation-backstage2/service"
 	"github.com/astaxie/beego"
-	DtoUser "../controllers/dto"
+	DtoUser "youtube-imitation-backstage2/controllers/dto"
 )
 
 type GetUser struct {
@@ -39,7 +39,12 @@ func (c *UserController) Register() {
 	phoneNumberMatched, _ := regexp.MatchString(`^1[34578]\d{9}$`, phoneNumber)
 	if userName != "" && EmailMatched && phoneNumberMatched && len(password) >= 8 {
 		if service.RegisterService(userName, email, phoneNumber, password) {
-			c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("register user success")
+			ok := service.CreatChannel(userName, email)
+			if ok {
+				c.Data["json"] = dto.NewSuccessResponseDtoNilMsg("register user success")
+			} else {
+				c.Data["json"] = dto.NewResponseDto(false, dto.INTERNATL_ERROR, "create channel error", nil)
+			}
 		} else {
 			c.Data["json"] = dto.NewResponseDto(false, dto.FORBBDIEN, "register user error", nil)
 		}

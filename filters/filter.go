@@ -1,12 +1,13 @@
 package filters
 
 import (
-	"../common/authorization"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"github.com/astaxie/beego/plugins/cors"
 	"github.com/dgrijalva/jwt-go"
 	"net/http"
+	"strings"
+	"youtube-imitation-backstage2/common/authorization"
 )
 
 func init()  {
@@ -21,7 +22,16 @@ func init()  {
 
 	beego.InsertFilter("/*", beego.BeforeRouter, func(ctx *context.Context) {
 
-		if ctx.Request.RequestURI != "/register" && ctx.Request.RequestURI != "/login" && ctx.Request.RequestURI != "/selectusername" {
+
+		index := strings.Index(ctx.Request.RequestURI, "?")
+		url := ""
+		if index != -1 {
+			url = ctx.Request.RequestURI[:index]
+		} else {
+			url = ctx.Request.RequestURI
+		}
+
+		if url != "/register" && url != "/login" && url != "/selectusername" && url != "/uploadvideo" && url != "/indexrender" && url != "/searchvideo" {
 
 			var token= ctx.Request.Header[authorization.TOKEN_HEADER_NAME]
 

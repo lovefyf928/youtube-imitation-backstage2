@@ -4,8 +4,8 @@ import (
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 	"strconv"
-	"../common/authorization"
-	"../repository"
+	"youtube-imitation-backstage2/common/authorization"
+	"youtube-imitation-backstage2/repository"
 )
 
 
@@ -42,4 +42,8 @@ func LoginService(userName string, password string) (string, bool) {
 
 func SelectUserNameService (phoneNumber string, email string) ([]string, bool) {
 	return repository.SelectUserNameRepository(phoneNumber, email)
+}
+
+func CreatChannel(userName string, email string) bool {
+	return repository.CreatChannelRepository(userName, email)
 }

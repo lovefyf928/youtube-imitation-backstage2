@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/astaxie/beego"
 	//_ "./filters"
-	_ "./routers"
+	_ "youtube-imitation-backstage2/routers"
 )
 
 func main() {
